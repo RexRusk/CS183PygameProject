@@ -1,41 +1,130 @@
 {
-    "image_name":"level_4",
-    "maps":[
-        {"start_x":   0, "end_x": 7043, "player_x":110, "player_y": 275}
-    ],
-    "ground":[
-        {"x":   0, "y":538, "width": 7043, "height":191}
-    ],
-    "step":[
-        {"x":5268, "y":409 , "width": 840, "height":44}
-    ],
-    "slider":[
-        {"x":5750, "y":238, "num":0, "direction":0, "range_start":5720, "range_end":5930}
-    ],
-    "box":[
-        {"x":1266, "y":336, "type":2}
-    ],
-    "pipe":[
-
-    ],
-    "enemy":[
-        {"0":[
-            {"x":1600, "y":200, "direction":0, "type":0, "color":0, "num":0}
-        ]},
-        {"1":[
-            {"x":2400, "y":200, "direction":0, "type":0, "color":1, "num":0}
-        ]},
-        {"2":[
-            {"x":3600, "y":200, "direction":0, "type":1, "color":0, "num":0}
-        ]},
-        {"3":[
-            {"x":4400, "y":200, "direction":0, "type":1, "color":1, "num":0}
-        ]}
-    ],
-    "checkpoint":[
-        {"x": 800, "y":0, "width":10, "height":600, "type":0, "enemy_groupid":0},
-        {"x": 1600, "y":0, "width":10, "height":600, "type":0, "enemy_groupid":1},
-        {"x": 2400, "y":0, "width":10, "height":600, "type":0, "enemy_groupid":2},
-        {"x": 3200, "y":0, "width":10, "height":600, "type":0, "enemy_groupid":3}
-    ]
+  "image_name": "level_4",
+  "maps": [
+    {
+      "start_x": 0,
+      "end_x": 7043,
+      "player_x": 110,
+      "player_y": 275
+    }
+  ],
+  "ground": [
+    {
+      "x": 0,
+      "y": 538,
+      "width": 7043,
+      "height": 191
+    }
+  ],
+  "step": [
+    {
+      "x": 5268,
+      "y": 409,
+      "width": 840,
+      "height": 44
+    }
+  ],
+  "slider": [
+    {
+      "x": 5750,
+      "y": 238,
+      "num": 0,
+      "direction": 0,
+      "range_start": 5720,
+      "range_end": 5930
+    }
+  ],
+  "box": [
+    {
+      "x": 1266,
+      "y": 336,
+      "type": 2
+    }
+  ],
+  "pipe": [
+  ],
+  "enemy": [
+    {
+      "0": [
+        {
+          "x": 1600,
+          "y": 200,
+          "direction": 0,
+          "type": 0,
+          "color": 0,
+          "num": 0
+        }
+      ]
+    },
+    {
+      "1": [
+        {
+          "x": 2400,
+          "y": 200,
+          "direction": 0,
+          "type": 0,
+          "color": 1,
+          "num": 0
+        }
+      ]
+    },
+    {
+      "2": [
+        {
+          "x": 3600,
+          "y": 200,
+          "direction": 0,
+          "type": 1,
+          "color": 0,
+          "num": 0
+        }
+      ]
+    },
+    {
+      "3": [
+        {
+          "x": 4400,
+          "y": 200,
+          "direction": 0,
+          "type": 1,
+          "color": 1,
+          "num": 0
+        }
+      ]
+    }
+  ],
+  "checkpoint": [
+    {
+      "x": 800,
+      "y": 0,
+      "width": 10,
+      "height": 600,
+      "type": 0,
+      "enemy_groupid": 0
+    },
+    {
+      "x": 1600,
+      "y": 0,
+      "width": 10,
+      "height": 600,
+      "type": 0,
+      "enemy_groupid": 1
+    },
+    {
+      "x": 2400,
+      "y": 0,
+      "width": 10,
+      "height": 600,
+      "type": 0,
+      "enemy_groupid": 2
+    },
+    {
+      "x": 3200,
+      "y": 0,
+      "width": 10,
+      "height": 600,
+      "type": 0,
+      "enemy_groupid": 3
+    }
+  ]
 }
