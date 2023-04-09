@@ -1,6 +1,5 @@
 import pygame
 from .. import constants as C
-from . import coin
 from .. import setup, tools
 
 pygame.font.init()
@@ -12,11 +11,10 @@ class Info:
         self.game_info = game_info
         self.create_state_lables()
         self.create_info_lables()
-        # self.flash_coin = coin.FlashingCoins()
-
         # initial timer for recording time
 
     # state provides different information to deffent levels
+
     def create_state_lables(self):
         # all lable are in center mode!
         self.state_lables = []
@@ -50,10 +48,10 @@ class Info:
             if self.game_info['level'] != 1:
                 self.state_lables.append((self.create_lable('SCORE      {}'.format(self.game_info['score']),
                                                             int(C.SCREEN_W / 36), (0, 0, 0)), C.SCREEN_W / 8,
-                                            C.SCREEN_H / 8))
+                                          C.SCREEN_H / 8))
                 self.state_lables.append((self.create_lable('COIN      {}'.format(self.game_info['coin']),
                                                             int(C.SCREEN_W / 36), (0, 0, 0)), C.SCREEN_W / 8 * 3,
-                                        C.SCREEN_H / 8))
+                                          C.SCREEN_H / 8))
                 self.state_lables.append((self.create_lable('LIVES      {}'.format(self.game_info['lives']),
                                                             int(C.SCREEN_W / 36), (0, 0, 0)), C.SCREEN_W / 8 * 5,
                                           C.SCREEN_H / 8))
@@ -67,34 +65,22 @@ class Info:
                 self.state_lables.append((self.create_lable('LIVES      {}'.format(self.game_info['lives']),
                                                             int(C.SCREEN_W / 36), (255, 255, 255)), C.SCREEN_W / 8 * 5,
                                           C.SCREEN_H / 8))
-            died = 0
             # initial time
+            # 0 is playing normally,1 is changing time such as dead,loading,restart etc.,
             if self.game_info['re_game'] == 1:
-                time = self.game_info['time']
-                self.game_info['time'] = 0
-                died = 1
+                self.timer = pygame.time.get_ticks()
                 self.game_info['re_game'] = 0
-            if died == 0:
-                self.game_info['time'] = int((pygame.time.get_ticks()) / 1000)
-                if self.game_info['level'] != 1:
-                    self.state_lables.append((self.create_lable('TIME      {}'.format(self.game_info['time']),
-                                                                int(C.SCREEN_W / 36), (0, 0, 0)),
-                                              C.SCREEN_W / 8 * 3, C.SCREEN_H / 16 * 3))
-                if self.game_info['level'] == 1:
-                    self.state_lables.append((self.create_lable('TIME      {}'.format(self.game_info['time']),
-                                                                int(C.SCREEN_W / 36), (255, 255, 255)),
-                                              C.SCREEN_W / 8 * 3, C.SCREEN_H / 16 * 3))
-            else:
-                timer = pygame.time.get_ticks() - time
-                self.game_info['time'] = int(timer / 1000)
-                if self.game_info['level'] != 1:
-                    self.state_lables.append((self.create_lable('TIME      {}'.format(self.game_info['time']),
-                                                                int(C.SCREEN_W / 36), (0, 0, 0)),
-                                              C.SCREEN_W / 8 * 3, C.SCREEN_H / 16 * 3))
-                if self.game_info['level'] == 1:
-                    self.state_lables.append((self.create_lable('TIME      {}'.format(self.game_info['time']),
-                                                                int(C.SCREEN_W / 36), (255, 255, 255)),
-                                              C.SCREEN_W / 8 * 3, C.SCREEN_H / 16 * 3))
+            self.current_timer = pygame.time.get_ticks() - self.timer + self.game_info['next_time'] * 1000
+
+            self.game_info['time'] = int(self.current_timer / 1000)
+            if self.game_info['level'] != 1:
+                self.state_lables.append((self.create_lable('TIME      {}'.format(self.game_info['time']),
+                                                            int(C.SCREEN_W / 36), (0, 0, 0)),
+                                          C.SCREEN_W / 8 * 3, C.SCREEN_H / 16 * 3))
+            if self.game_info['level'] == 1:
+                self.state_lables.append((self.create_lable('TIME      {}'.format(self.game_info['time']),
+                                                            int(C.SCREEN_W / 36), (255, 255, 255)),
+                                          C.SCREEN_W / 8 * 3, C.SCREEN_H / 16 * 3))
 
             if self.game_info['level'] != 1:
                 self.state_lables.append((self.create_lable('WORLD      {}'.format(self.game_info['level'] + 1),
@@ -140,7 +126,7 @@ class Info:
 
         for lable2 in self.info_lables:
             surface.blit(lable2[0], (
-            lable2[1] - lable2[0].get_rect().size[0] * 0.5, lable2[2] - lable2[0].get_rect().size[1] * 0.5))
+                lable2[1] - lable2[0].get_rect().size[0] * 0.5, lable2[2] - lable2[0].get_rect().size[1] * 0.5))
         # surface.blit(self.flash_coin.image, self.flash_coin.rect)
 
         if self.state == 'load_screen':

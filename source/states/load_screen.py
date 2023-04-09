@@ -11,6 +11,8 @@ class LoadScreen:
         self.finished = False
         self.next = 'level'
         self.duration = 2000
+        if self.game_info['level'] == 3:
+            self.duration = 5600
         self.timer = 0
         self.info = info.Info('load_screen', self.game_info)
 
@@ -23,7 +25,6 @@ class LoadScreen:
 
     def update(self, surface, keys):
         self.draw(surface)
-
         if self.timer == 0:
             self.timer = pygame.time.get_ticks()
         elif pygame.time.get_ticks() - self.timer > self.duration:
@@ -57,7 +58,7 @@ class GameOver(LoadScreen):
 
     def update(self, surface, keys):
         self.draw(surface)
-
+        self.game_info.update()
         if self.timer == 0:
             self.timer = pygame.time.get_ticks()
         elif pygame.time.get_ticks() - self.timer > self.duration:

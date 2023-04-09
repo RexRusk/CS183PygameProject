@@ -10,6 +10,7 @@ import json
 class Level:
     def start(self, game_info):
         self.game_info = game_info
+        self.game_info['re_game'] = 1
         self.setup_music(self.game_info)
         self.finished = False
         self.next = 'game_over'
@@ -26,10 +27,19 @@ class Level:
         self.setup_enemies()
         self.setup_checkpoints()
         self.check_win()
+        self.setup_keyboard()
         self.current_time = 0
-        self.setup_touches()
         self.a = 0  # pause
         self.b = 0  # menu
+        self.c = 0  # left keyboard
+        self.d = 0  # right keyboard
+        self.e = 0  # jump keyboard
+        # TODO
+        # self.f = 0  #rush keyboard
+        self.g = 0  # music on and off blit
+        if self.game_info['volume'] == 0 and self.game_info['memory_volume'] != 0:
+            self.g = 2
+        self.setup_touches()
         self.stop = False
         self.hold = False  # buttons
 
@@ -43,7 +53,7 @@ class Level:
     def setup_background(self):
         self.image_name = self.map_data['image_name']
         # sky is here
-        self.sky = setup.GRAPHICS['Sky']
+        self.sky = setup.GRAPHICS['Sky_8_6']
         sky_rect = self.sky.get_rect()
         self.sky = pygame.transform.scale(self.sky, (int(sky_rect.width * C.BG_MULTI),
                                                      int(sky_rect.height * C.BG_MULTI)))
@@ -156,6 +166,92 @@ class Level:
             pygame.mixer.stop()
             tools.load_musics('resources/music/happily.mp3', -1)
 
+    # 17 June 2021 updated
+    def setup_keyboard(self):
+        # left right jump rush
+        self.left_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 142, 365, 135, 135, (0, 0, 0),
+                                           0.5)
+        self.right_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 144, 217, 135, 135, (0, 0, 0),
+                                            0.5)
+        self.jump_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 141, 514, 135, 135, (0, 0, 0),
+                                           0.5)
+        self.rush_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 142, 70, 135, 135, (0, 0, 0),
+                                           0.5)
+
+    def update_keyboard(self, keys):
+        x, y = pygame.mouse.get_pos()
+        pressed_array = pygame.mouse.get_pressed()
+
+        # left move
+        if self.c % 2 == 0 and (
+                keys[pygame.K_a] or keys[pygame.K_LEFT] or (pressed_array[0] and x >= C.SCREEN_W * 1 / 8 - 31.25 \
+                                                            and x <= C.SCREEN_W * 1 / 8 + 31.25 \
+                                                            and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                                                            and y <= C.SCREEN_H * 7 / 8 + 31.25)):
+            self.left_button = buttons.button_pressed(self.left_button)
+            self.c = 1
+        elif self.c % 2 == 1 and not (
+                keys[pygame.K_a] or keys[pygame.K_LEFT] or (pressed_array[0] and x >= C.SCREEN_W * 1 / 8 - 31.25 \
+                                                            and x <= C.SCREEN_W * 1 / 8 + 31.25 \
+                                                            and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                                                            and y <= C.SCREEN_H * 7 / 8 + 31.25)):
+            self.left_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 142, 365, 135, 135, (0, 0, 0),
+                                               0.5)
+            self.c = 0
+        # right move
+        if self.d % 2 == 0 and (
+                keys[pygame.K_d] or keys[pygame.K_RIGHT] or (pressed_array[0] and x >= C.SCREEN_W * 1 / 4 - 31.25 \
+                                                             and x <= C.SCREEN_W * 1 / 4 + 31.25 \
+                                                             and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                                                             and y <= C.SCREEN_H * 7 / 8 + 31.25)):
+            self.right_button = buttons.button_pressed(self.right_button)
+            self.d = 1
+        elif self.d % 2 == 1 and not (
+                keys[pygame.K_d] or keys[pygame.K_RIGHT] or (pressed_array[0] and x >= C.SCREEN_W * 1 / 4 - 31.25 \
+                                                             and x <= C.SCREEN_W * 1 / 4 + 31.25 \
+                                                             and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                                                             and y <= C.SCREEN_H * 7 / 8 + 31.25)):
+            self.right_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 144, 217, 135, 135, (0, 0, 0),
+                                                0.5)
+            self.d = 0
+        # jump move
+        if self.e % 2 == 0 and (keys[pygame.K_SPACE] or (pressed_array[0] and x >= C.SCREEN_W * 13 / 16 - 31.25 \
+                                                         and x <= C.SCREEN_W * 13 / 16 + 31.25 \
+                                                         and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                                                         and y <= C.SCREEN_H * 7 / 8 + 31.25)):
+            self.jump_button = buttons.button_pressed(self.jump_button)
+
+            self.e = 1
+        elif self.e % 2 == 1 and not (keys[pygame.K_SPACE] or (pressed_array[0] and x >= C.SCREEN_W * 13 / 16 - 31.25 \
+                                                               and x <= C.SCREEN_W * 13 / 16 + 31.25 \
+                                                               and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                                                               and y <= C.SCREEN_H * 7 / 8 + 31.25)):
+            self.jump_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 141, 514, 135, 135, (0, 0, 0),
+                                               0.5)
+            self.e = 0
+
+        # pressed
+        if pressed_array[0] \
+                and x >= C.SCREEN_W * 1 / 8 - 31.25 \
+                and x <= C.SCREEN_W * 1 / 8 + 31.25 \
+                and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                and y <= C.SCREEN_H * 7 / 8 + 31.25:
+            pygame.key.set_mods(1)
+        elif pressed_array[0] \
+                and x >= C.SCREEN_W * 1 / 4 - 31.25 \
+                and x <= C.SCREEN_W * 1 / 4 + 31.25 \
+                and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                and y <= C.SCREEN_H * 7 / 8 + 31.25:
+            pygame.key.set_mods(2)
+        elif pressed_array[0] \
+                and x >= C.SCREEN_W * 13 / 16 - 31.25 \
+                and x <= C.SCREEN_W * 13 / 16 + 31.25 \
+                and y >= C.SCREEN_H * 7 / 8 - 31.25 \
+                and y <= C.SCREEN_H * 7 / 8 + 31.25:
+            pygame.key.set_mods(3)
+        else:
+            pygame.key.set_mods(pygame.KMOD_NONE)
+
     def update(self, surface, keys):
         self.current_time = pygame.time.get_ticks()
         # update player's position
@@ -170,6 +266,7 @@ class Level:
                     self.finished = True
                     self.update_game_info()
             else:
+                self.update_keyboard(keys)
                 self.player.update(keys)
                 self.game_info.update()
                 self.update_touches(keys)
@@ -256,9 +353,9 @@ class Level:
         if box:
             self.adjust_player_y(box)
             if box.box_type == 2:
-                tools.load_sounds('resources/sound/aha.mp3', 1.0)
+                tools.load_sounds('resources/sound/aha.mp3', self.game_info['volume'])
         if coin:
-            tools.load_sounds('resources/sound/coin.mp3', 1.0)
+            tools.load_sounds('resources/sound/coin.mp3', self.game_info['volume'])
             coin.kill()
             self.game_info['coin'] += 1
         if enemy:
@@ -299,6 +396,7 @@ class Level:
             self.player.state = 'walk'
         # upwards
         else:
+            tools.load_sounds('resources/sound/collision.wav', self.game_info['volume'])
             self.player.rect.top = sprite.rect.bottom
             self.player.y_vel = 7
             self.player.state = 'fall'
@@ -358,6 +456,18 @@ class Level:
         if self.stop == True:
             surface.blit(self.menu_button, (C.SCREEN_W / 2 - self.menu_button.get_rect().size[0] / 2,
                                             C.SCREEN_H / 8 * 3 - self.menu_button.get_rect().size[1] / 2))
+            surface.blit(self.restart_button, (C.SCREEN_W / 4 - self.menu_button.get_rect().size[0] / 2,
+                                               C.SCREEN_H / 8 * 3 - self.menu_button.get_rect().size[1] / 2))
+            surface.blit(self.music_button, (C.SCREEN_W / 4 * 3 - self.menu_button.get_rect().size[0] / 2,
+                                             C.SCREEN_H / 8 * 3 - self.menu_button.get_rect().size[1] / 2))
+
+        # keyboard
+        surface.blit(self.left_button, (C.SCREEN_W / 8 - self.left_button.get_rect().size[0] / 2,
+                                        C.SCREEN_H / 8 * 7 - self.left_button.get_rect().size[1] / 2))
+        surface.blit(self.right_button, (C.SCREEN_W / 4 - self.right_button.get_rect().size[0] / 2,
+                                         C.SCREEN_H / 8 * 7 - self.right_button.get_rect().size[1] / 2))
+        surface.blit(self.jump_button, (C.SCREEN_W / 16 * 13 - self.jump_button.get_rect().size[0] / 2,
+                                        C.SCREEN_H / 8 * 7 - self.jump_button.get_rect().size[1] / 2))
 
     def check_checkpoints(self):
         # check whether player invoke checkpoints
@@ -377,6 +487,7 @@ class Level:
             self.game_info['lives'] -= 1
             self.game_info['score'] = self.game_info['next_score']
             self.game_info['coin'] = self.game_info['next_coin']
+            self.game_info['re_game'] = 1
         if self.game_info['lives'] == 0:
             self.next = 'game_over'
         else:
@@ -390,6 +501,8 @@ class Level:
                     or (self.player.rect.x > 8100 and self.game_info['level'] == 1):
                 self.game_info['next_score'] += self.game_info['score']
                 self.game_info['next_coin'] += self.game_info['coin']
+                self.game_info['next_time'] = self.game_info['time']
+                self.game_info['re_game'] = 1
                 self.next = 'load_screen'
                 self.game_info['level'] += 1
                 pygame.time.delay(200)
@@ -398,8 +511,10 @@ class Level:
             self.player.x_vel = 7
             if (self.player.rect.x > 7000 and self.game_info['level'] == 2 and self.finished == False):
                 tools.load_musics('resources/sound/completed.mp3')
-                self.game_info['next_score'] = self.game_info['score']
+                self.game_info['next_score'] += self.game_info['score']
                 self.game_info['next_coin'] += self.game_info['coin']
+                self.game_info['next_time'] = self.game_info['time']
+                self.game_info['re_game'] = 1
                 self.game_info['level'] += 1
                 self.game_info['player_state'] = 'complete'
                 self.next = 'load_screen'
@@ -409,9 +524,16 @@ class Level:
     def setup_touches(self):
         self.pause_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 140, 810, 138, 138, (0, 0, 0),
                                             C.NBG_MULTI)
-        # back to manu
         self.menu_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 1324, 1105, 138, 138, (0, 0, 0),
-                                           2 * C.NBG_MULTI)
+                                           1)
+        self.restart_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 737, 367, 137, 137, (0, 0, 0),
+                                              1)
+        if self.g == 0:
+            self.music_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 734, 70, 135, 135, (0, 0, 0),
+                                                1)
+        elif self.g == 2:
+            self.music_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 734, 216, 135, 135, (0, 0, 0),
+                                                1)
 
     def update_touches(self, keys):
         x, y = pygame.mouse.get_pos()
@@ -450,16 +572,78 @@ class Level:
         if self.stop == True:
             # go main_menu button
             if pressed_array[0] \
-                    and x >= C.SCREEN_W / 2 - 69 * 2 \
-                    and x <= C.SCREEN_W / 2 + 69 * 2 \
-                    and y >= C.SCREEN_H / 2 - 69 * 2 \
-                    and y <= C.SCREEN_H / 2 + 69 * 2:
+                    and x >= C.SCREEN_W / 2 - 69 \
+                    and x <= C.SCREEN_W / 2 + 69 \
+                    and y >= C.SCREEN_H / 8 * 3 - 69 \
+                    and y <= C.SCREEN_H / 8 * 3 + 69:
                 self.stop = False
                 self.next = 'main_menu'
                 pygame.time.delay(50)
                 self.finished = True
 
+            # restart button
+            if pressed_array[0] \
+                    and x >= C.SCREEN_W / 4 - 61 \
+                    and x <= C.SCREEN_W / 4 + 61 \
+                    and y >= C.SCREEN_H / 8 * 3 - 61 \
+                    and y <= C.SCREEN_H / 8 * 3 + 61:
+                self.stop = False
+                self.next = 'level'
+                pygame.time.delay(50)
+                self.game_info['score'] = self.game_info['next_score']
+                self.game_info['coin'] = self.game_info['next_coin']
+                self.game_info['time'] = self.game_info['next_time']
+                self.finished = True
+
+            # music on and off
+            if pressed_array[0] \
+                    and self.g == 0 \
+                    and x >= C.SCREEN_W / 4 * 3 - 61 \
+                    and x <= C.SCREEN_W / 4 * 3 + 61 \
+                    and y >= C.SCREEN_H / 8 * 3 - 61 \
+                    and y <= C.SCREEN_H / 8 * 3 + 61:
+                self.g = 1
+                pygame.time.delay(50)
+            if not pressed_array[0] and self.g == 1 and x >= C.SCREEN_W / 4 * 3 - 61 \
+                    and x <= C.SCREEN_W / 4 * 3 + 61 \
+                    and y >= C.SCREEN_H / 8 * 3 - 61 \
+                    and y <= C.SCREEN_H / 8 * 3 + 61:
+                self.music_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 734, 216, 135, 135, (0, 0, 0),
+                                                    1)
+                pygame.mixer.music.set_volume(0)
+                self.game_info['memory_volume'] = self.game_info['volume']
+                self.game_info['volume'] = 0
+                self.g = 2
+            if pressed_array[0] \
+                    and self.g == 2 \
+                    and x >= C.SCREEN_W / 4 * 3 - 61 \
+                    and x <= C.SCREEN_W / 4 * 3 + 61 \
+                    and y >= C.SCREEN_H / 8 * 3 - 61 \
+                    and y <= C.SCREEN_H / 8 * 3 + 61:
+                self.g = 3
+                pygame.time.delay(50)
+            if not pressed_array[0] and self.g == 3 and x >= C.SCREEN_W / 4 * 3 - 61 \
+                    and x <= C.SCREEN_W / 4 * 3 + 61 \
+                    and y >= C.SCREEN_H / 8 * 3 - 61 \
+                    and y <= C.SCREEN_H / 8 * 3 + 61:
+                self.music_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 734, 70, 135, 135, (0, 0, 0),
+                                                    1)
+                self.game_info['volume'] = self.game_info['memory_volume']
+                pygame.mixer.music.set_volume(self.game_info['volume'])
+                self.g = 0
+
             # back to play
-            elif pressed_array[0] and self.hold == False and self.stop == True:
+            if pressed_array[0] and self.hold == False and self.stop == True \
+                    and not (x >= C.SCREEN_W / 2 - 69 \
+                             and x <= C.SCREEN_W / 2 + 69 \
+                             and y >= C.SCREEN_H / 8 * 3 - 69 \
+                             and y <= C.SCREEN_H / 8 * 3 + 69) and not (x >= C.SCREEN_W / 4 - 61 \
+                                                                        and x <= C.SCREEN_W / 4 + 61 \
+                                                                        and y >= C.SCREEN_H / 8 * 3 - 61 \
+                                                                        and y <= C.SCREEN_H / 8 * 3 + 61) and not (
+                    x >= C.SCREEN_W / 4 * 3 - 61 \
+                    and x <= C.SCREEN_W / 4 * 3 + 61 \
+                    and y >= C.SCREEN_H / 8 * 3 - 61 \
+                    and y <= C.SCREEN_H / 8 * 3 + 61):
                 self.hold = True
                 self.stop = False

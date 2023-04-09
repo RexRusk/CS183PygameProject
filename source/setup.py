@@ -9,6 +9,4 @@ pygame.init()
 SCREEN = pygame.display.set_mode((800, 600))
 # loading graphics
 GRAPHICS = tools.load_graphics('resources/graphics')
-GUI = tools.load_graphics('Free Platform Game Assets/GUI ( Update 1.7 )/png')
-MAP1_BG = tools.load_graphics(
-    'Free Platform Game Assets/Backgrounds/New Background ( Update 1.9 )/png/1920x1080/background')
+GUI = tools.load_graphics('resources/graphics')

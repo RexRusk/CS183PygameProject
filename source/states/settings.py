@@ -30,7 +30,7 @@ class Settings:
     def setup_buttons(self):
         self.back_button = tools.get_image(setup.GUI['Empty1024x1024'], 477, 585, 525, 136, (0, 0, 0), C.NBG_MULTI)
         self.BG_button = tools.get_image(setup.GUI['Empty1024x1024'], 477, 585, 525, 136, (0, 0, 0), C.NBG_MULTI)
-        self.ball_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 139, 69, 140, 140, (0, 0, 0), C.NBG_MULTI)
+        self.ball_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 291, 71, 140, 140, (0, 0, 0), C.NBG_MULTI)
         # bug fix
         self.hold = False
         self.ini_x, self.ini_y = C.SCREEN_W / 2 - 35, C.SCREEN_H / 2 - 35
@@ -69,7 +69,9 @@ class Settings:
             pygame.mixer.music.set_volume(self.game_info['volume'])
 
     def update(self, surface, keys):
+        self.game_info.update()
         self.update_buttons(self.game_info)
+        self.info.update()
         self.draw(surface)
 
     def draw(self, surface):

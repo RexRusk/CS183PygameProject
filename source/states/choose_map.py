@@ -33,6 +33,7 @@ class ChoseMap:
             self.loose = True
         # switch levels
         if self.loose == True:
+            self.game_info['re_game'] = 1
             if pressed_array[0] \
                     and y < C.SCREEN_H / 3:
                 self.game_info['level'] = 0
@@ -46,7 +47,7 @@ class ChoseMap:
             elif pressed_array[0] \
                     and C.SCREEN_H * 2 / 3 < y < C.SCREEN_H \
                     and not (
-                    C.SCREEN_W / 8 - 35 <= x <= C.SCREEN_W / 2 + 35 and C.SCREEN_H * 7 / 8 - 35 <= y <= C.SCREEN_H * 7 / 8 + 35):
+                    C.SCREEN_W / 8 - 35 <= x <= C.SCREEN_W / 8 + 35 and C.SCREEN_H * 7 / 8 - 35 <= y <= C.SCREEN_H * 7 / 8 + 35):
                 self.game_info['level'] = 2
                 self.finished = True
 
@@ -61,11 +62,12 @@ class ChoseMap:
         self.game_info.update()
         self.update_buttons(keys)
         self.draw(surface)
+        self.info.update()
 
     def draw(self, surface):
         surface.fill((255, 255, 255))
         surface.blit(self.background, (0, 0))
         surface.blit(self.back_button, (C.SCREEN_W / 8 - self.back_button.get_rect().size[0] / 2,
                                         C.SCREEN_H * 7 / 8 - self.back_button.get_rect().size[1] / 2))
-        self.info.update()
+
         self.info.draw(surface)

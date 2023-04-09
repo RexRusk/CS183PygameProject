@@ -52,7 +52,7 @@ class Box(pygame.sprite.Sprite):
         self.image = self.frames[self.frame_index]
 
     def go_bumped(self):
-        self.y_vel = -7
+        self.y_vel = -4
         self.state = 'bumped'
 
     def bumped(self):

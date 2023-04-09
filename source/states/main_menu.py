@@ -17,9 +17,15 @@ class MainMenu:
             'level': 0,
             'volume': 0.5,
             'time': 0,
+            'next_time': 0,
             're_game': 0,
             'next_score': 0,
             'next_coin': 0,
+            'memory_volume': 0,
+            'left': 0,
+            'right': 0,
+            'jump': 0,
+            'rush': 0
         }
         self.start(game_info)
 
@@ -30,7 +36,6 @@ class MainMenu:
         self.setup_player()
         self.setup_gui()
         self.setup_buttons()
-        self.setup_cursor()
         self.setup_music()
         self.info = info.Info('main_menu', self.game_info)
         self.finished = False
@@ -53,14 +58,10 @@ class MainMenu:
 
         self.viweport = setup.SCREEN.get_rect()
 
-        # self.caption = tools.get_image(setup.GRAPHICS['logo1'], 0, 0, 700, 290, (0, 0, 0), C.NBG_MULTI)
-
     def update_background(self, keys):
         self.timer += 1
         if self.timer - C.SCREEN_W > 0:
             self.timer = 0
-        # self.background1.get_rect().x += 500
-
         self.viweport = (-self.timer, 0)
         self.viewport = (C.SCREEN_W - self.timer, 0)
 
@@ -69,23 +70,11 @@ class MainMenu:
 
     def setup_gui(self):
         # these codes print main menu ui graphics
-        # self.gui1 = tools.get_image(setup.GUI['Empty1024x1024'], 477, 48, 525, 136, (0, 0, 0), C.NBG_MULTI)
         self.gui2 = tools.get_image(setup.GUI['Empty1024x1024'], 477, 315, 525, 136, (0, 0, 0), C.NBG_MULTI)
         self.gui3 = tools.get_image(setup.GUI['Empty1024x1024'], 477, 585, 525, 136, (0, 0, 0), C.NBG_MULTI)
 
     def setup_buttons(self):
         self.gui1 = tools.get_image(setup.GUI['Empty1024x1024'], 477, 48, 525, 136, (0, 0, 0), C.NBG_MULTI)
-
-    def setup_cursor(self):
-        # setup the main menu cursor(mush)
-        # self.cursor = pygame.sprite.Sprite()
-        # self.cursor.image = tools.get_image(setup.GRAPHICS['cursor'], 0, 0, 100, 100, (0, 0, 0), C.NBG_MULTI)
-        # rect = self.cursor.image.get_rect()
-        # rect.x, rect.y = (220, 360)
-        # self.cursor.rect = rect
-        # initial cursor to 1 player
-        # self.cursor.state = 1
-        pass
 
     # use keyboard to control the cursor
     def update_cursor(self, keys):
@@ -210,10 +199,6 @@ class MainMenu:
         surface.blit(self.gui3, (
             C.SCREEN_W / 2 - self.gui3.get_rect().size[0] / 2, C.SCREEN_H / 4 * 3 - self.gui3.get_rect().size[1] / 2))
 
-        # surface.blit(self.cursor.image, self.cursor.rect)
-
-        # buttons.Buttons.update_state(keys)
-
         # surface.blit(self.button1, (C.SCREEN_W / 2 - 262, C.SCREEN_H / 2))
 
         # display the main menu status words
@@ -227,10 +212,16 @@ class MainMenu:
             'lives': 3,
             'player_state': 'not_complete',
             'level': 0,
-            'volume': 0.5,
             're_game': 1,
             'next_score': 0,
             'next_coin': 0,
+            'time': 0,
+            'next_time': 0,
+            'left': 0,
+            'right': 0,
+            'jump': 0,
+            'rush': 0
+
         })
 
     def setup_music(self):

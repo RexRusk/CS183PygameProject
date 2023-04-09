@@ -40,7 +40,7 @@ class Enemy(pygame.sprite.Sprite):
 
     def load_frames(self, frame_rects):
         for frame_rect in frame_rects:
-            left_frame = tools.get_image(setup.GRAPHICS['enemies'], *frame_rect, (0, 0, 0), C.MONSTER_MULTI)
+            left_frame = tools.get_image(setup.GRAPHICS['enemies'], *frame_rect, (0, 255, 0), C.MONSTER_MULTI)
             # flip left to right
             right_frame = pygame.transform.flip(left_frame, True, False)
             self.left_frames.append(left_frame)
@@ -86,7 +86,12 @@ class Enemy(pygame.sprite.Sprite):
             self.kill()
 
     def trampled(self):
-        pass
+        self.x_vel = 0
+        self.frame_index = 2
+        if self.death_timer == 0:
+            self.death_timer = self.current_time
+        if self.current_time - self.death_timer > 500:
+            self.kill()
 
     def slide(self):
         pass
@@ -95,7 +100,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.x += self.x_vel
         self.check_x_collisions(level)
         self.rect.y += self.y_vel
-        if self.state != 'die':
+        if self.state != 'die' and self.state != 'trampled':
             self.check_y_collisions(level)
 
     def check_x_collisions(self, level):

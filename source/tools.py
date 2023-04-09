@@ -41,7 +41,6 @@ class Game:
                 # button's keys
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.keys = pygame.key.get_pressed()
-
                 elif event.type == pygame.MOUSEMOTION:
                     pos = pygame.mouse.get_pos()
                     self.mouse_x = pos[0]
@@ -49,13 +48,17 @@ class Game:
                     self.keys = pygame.key.get_pressed()
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.keys = pygame.key.get_pressed()
+                if event.type == pygame.KEYDOWN or event.type == pygame.KEYUP:
+                    if event.mod == pygame.KMOD_NONE:
+                        pygame.key.set_mods(pygame.KMOD_NONE)
+
             # try:
             self.update()
             pygame.display.update()
             # except:
             #    pass
             # set frame rate
-            self.clock.tick(120)
+            self.clock.tick(90)
 
 
 # loading graphics,accept the pictures' path and extension

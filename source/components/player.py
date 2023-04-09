@@ -1,6 +1,7 @@
 import pygame
 from .. import tools, setup
 from .. import constants as C
+from ..components import info
 import json
 import os
 
@@ -8,8 +9,8 @@ import os
 class Player(pygame.sprite.Sprite):
     def __init__(self, name, game_info):
         pygame.sprite.Sprite.__init__(self)
-        self.name = name
         self.game_info = game_info
+        self.name = name
         self.load_data()
         self.setup_states()
         self.setup_velocities()
@@ -60,7 +61,7 @@ class Player(pygame.sprite.Sprite):
     def load_images(self):
         sheet = setup.GRAPHICS['mario_bros']
         frame_rects = self.player_data['image_frames']
-
+        # TODO
         # these are frame pictures in different while pressing keys
         self.right_small_normal_frames = []
         self.right_big_normal_frames = []
@@ -109,7 +110,6 @@ class Player(pygame.sprite.Sprite):
 
     # update the player's position
     def update(self, keys):
-        self.game_info.update()
         # use current_time th update the time while changing player
         self.current_time = pygame.time.get_ticks()
         self.handle_states(keys)
@@ -143,13 +143,14 @@ class Player(pygame.sprite.Sprite):
         self.frame_index = 0
         self.x_vel = 0
         self.y_vel = 0
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        # print(pygame.key.get_mods())
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d] or pygame.key.get_mods() == 2:
             self.face_right = True
             self.state = 'walk'
-        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a] or pygame.key.get_mods() == 1:
             self.face_right = False
             self.state = 'walk'
-        elif keys[pygame.K_SPACE] and self.can_jump > 0:
+        elif (keys[pygame.K_SPACE] or pygame.key.get_mods() == 3) and self.can_jump > 0:
             self.can_jump -= 1
             self.y_vel = self.jump_vel
             self.current_time2 = pygame.time.get_ticks()
@@ -157,7 +158,7 @@ class Player(pygame.sprite.Sprite):
             self.state = 'jump'
 
     def walk(self, keys):
-        if keys[pygame.K_LSHIFT]:
+        if keys[pygame.K_LSHIFT] or pygame.key.get_mods() == 4:
             self.max_x_vel = self.max_run_vel
             self.x_accel = self.run_accel
         else:
@@ -175,13 +176,13 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.frame_index = 1
             self.walking_timer = self.current_time
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d] or pygame.key.get_mods() == 2:
             self.face_right = True
             if self.x_vel < 0:
                 self.frame_index = 5
                 self.x_accel = self.turn_accel
             self.x_vel = self.calc_vel(self.x_vel, self.x_accel, self.max_x_vel, True)
-        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a] or pygame.key.get_mods() == 1:
             self.face_right = False
             if self.x_vel > 0:
                 self.frame_index = 5
@@ -205,19 +206,27 @@ class Player(pygame.sprite.Sprite):
         # self.can_jump  = 0
         if self.y_vel >= 0:
             self.state = 'fall'
-        if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
+        if keys[pygame.K_d] or keys[pygame.K_RIGHT] or pygame.key.get_mods() == 2:
             self.face_right = True
             self.x_vel = self.calc_vel(self.x_vel, self.x_accel, self.max_x_vel, True)
-        elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
+        elif keys[pygame.K_a] or keys[pygame.K_LEFT] or pygame.key.get_mods() == 1:
             self.face_right = False
             self.x_vel = self.calc_vel(self.x_vel, self.x_accel, self.max_x_vel, False)
         # fondermantal jump distance
-        if not keys[pygame.K_SPACE] and pygame.time.get_ticks() - self.current_time2 > 250:
+        # double jump bug fixed
+        if not (keys[
+                    pygame.K_SPACE] or pygame.key.get_mods() == 3) and pygame.time.get_ticks() - self.current_time2 <= 250:
+            self.can_second_jump = 2
+            self.state = 'fall'
+
+        if not (keys[
+                    pygame.K_SPACE] or pygame.key.get_mods() == 3) and pygame.time.get_ticks() - self.current_time2 > 250:
             self.y_vel = 0
             self.state = 'fall'
             self.current_time = 0
 
     def fall(self, keys):
+        self.frame_index = 4
         self.y_vel = self.calc_vel(self.y_vel, self.gravity, self.max_y_vel)
 
         # if self.rect.bottom > C.GROUND_HEIGHT:
@@ -225,17 +234,17 @@ class Player(pygame.sprite.Sprite):
         #    self.y_vel = 0
         #    self.state = 'walk'
 
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d] or pygame.key.get_mods() == 2:
             self.face_right = True
             self.x_vel = self.calc_vel(self.x_vel, self.x_accel, self.max_x_vel, True)
-        elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        elif keys[pygame.K_LEFT] or keys[pygame.K_a] or pygame.key.get_mods() == 1:
             self.face_right = False
             self.x_vel = self.calc_vel(self.x_vel, self.x_accel, self.max_x_vel, False)
 
-        if not keys[pygame.K_SPACE] and self.can_jump > 0:
+        if not (keys[pygame.K_SPACE] or pygame.key.get_mods() == 3) and self.can_jump > 0:
             self.can_second_jump = 2
 
-        if keys[pygame.K_SPACE] and self.can_jump > 0 and self.can_second_jump:
+        if (keys[pygame.K_SPACE] or pygame.key.get_mods() == 3) and self.can_jump > 0 and self.can_second_jump:
             self.current_time2 = pygame.time.get_ticks()
             tools.load_sounds('resources/music/jump.wav', self.game_info['volume'])
             self.state = 'jump'
