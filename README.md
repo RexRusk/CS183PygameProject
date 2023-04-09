@@ -4,6 +4,8 @@ This is a video game programming based on Pygame in Python3.9.2.
 
 It is a 2D Mario platform jumping game, having 3 levels and some block interactions, even with the left-up score counts (all the score are counted correctly). I also improve the game UI with better performance, and you can choose the keyboard or the screen touching to interact the player.
 
+![Preview.png](Preview.png)
+
 Although it is a group project, I completed this project by myself.
 The game is well-designed, especially the UI in the game.
 It is open source, but please don't plagiarize without citations.
