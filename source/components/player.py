@@ -4,6 +4,7 @@ from .. import constants as C
 import json
 import os
 
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, name, game_info):
         pygame.sprite.Sprite.__init__(self)
@@ -15,27 +16,28 @@ class Player(pygame.sprite.Sprite):
         self.setup_timers()
         self.load_images()
 
-    #load player's picture transform data
+    # load player's picture transform data
     def load_data(self):
         file_name = self.name + '.json'
         file_path = os.path.join('source/data/player', file_name)
         with open(file_path) as f:
             self.player_data = json.load(f)
 
-    #the player's state
+    # the player's state
     def setup_states(self):
         self.state = 'stand'
         self.face_right = True
         self.dead = False
         self.big = False
-        #todo
+        # todo
         self.can_jump = 2
+
     # player's speed
     def setup_velocities(self):
         speed = self.player_data['speed']
         self.x_vel = 0
         self.y_vel = 0
-        #from mario.json
+        # from mario.json
         self.max_walk_vel = speed['max_walk_speed']
         self.max_run_vel = speed['max_run_speed']
         self.max_y_vel = speed['max_y_velocity']
@@ -44,31 +46,33 @@ class Player(pygame.sprite.Sprite):
         self.run_accel = speed['run_accel']
         self.turn_accel = speed['turn_accel']
         self.gravity = C.GRAVITY
-        #initial the speed
+        # initial the speed
 
         self.max_x_vel = self.max_walk_vel
         self.x_accel = self.walk_accel
+
     # record player's time from different states
     def setup_timers(self):
         self.walking_timer = 0
         self.transition_timer = 0
         self.death_timer = 0
+
     def load_images(self):
         sheet = setup.GRAPHICS['mario_bros']
         frame_rects = self.player_data['image_frames']
 
-        #these are frame pictures in different while pressing keys
+        # these are frame pictures in different while pressing keys
         self.right_small_normal_frames = []
         self.right_big_normal_frames = []
         self.right_big_fire_frames = []
         self.left_small_normal_frames = []
         self.left_big_normal_frames = []
         self.left_big_fire_frames = []
-        #collection
+        # collection
         self.small_normal_frames = [self.right_small_normal_frames, self.left_small_normal_frames]
         self.big_normal_frames = [self.right_big_normal_frames, self.left_big_normal_frames]
         self.big_fire_frames = [self.right_big_fire_frames, self.left_big_fire_frames]
-        #all
+        # all
         self.all_frames = [
             self.right_small_normal_frames,
             self.right_big_normal_frames,
@@ -77,7 +81,7 @@ class Player(pygame.sprite.Sprite):
             self.left_big_normal_frames,
             self.left_big_fire_frames,
         ]
-        #left and right data
+        # left and right data
         self.right_frames = self.right_small_normal_frames
         self.left_frames = self.left_small_normal_frames
 
@@ -97,15 +101,16 @@ class Player(pygame.sprite.Sprite):
                     self.right_big_fire_frames.append(right_image)
                     self.left_big_fire_frames.append(left_image)
 
-        #frame_index from 1 to 4 represent different frames of player
+        # frame_index from 1 to 4 represent different frames of player
         self.frame_index = 0
         self.frames = self.right_frames
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
-    #update the player's position
+
+    # update the player's position
     def update(self, keys):
         self.game_info.update()
-        #use current_time th update the time while changing player
+        # use current_time th update the time while changing player
         self.current_time = pygame.time.get_ticks()
         self.handle_states(keys)
 
@@ -129,12 +134,10 @@ class Player(pygame.sprite.Sprite):
 
     def can_jump_or_not(self, keys):
         if self.can_jump == 0 and (self.state == 'walk' or self.state == 'stand'):
-            #todo
+            # todo
             self.can_jump = 2
-            #second jump must before first jump
+            # second jump must before first jump
             self.can_second_jump = 0
-
-
 
     def stand(self, keys):
         self.frame_index = 0
@@ -152,7 +155,6 @@ class Player(pygame.sprite.Sprite):
             self.current_time2 = pygame.time.get_ticks()
             tools.load_sounds('resources/music/jump.wav', self.game_info['volume'])
             self.state = 'jump'
-
 
     def walk(self, keys):
         if keys[pygame.K_LSHIFT]:
@@ -197,12 +199,10 @@ class Player(pygame.sprite.Sprite):
                     self.x_vel = 0
                     self.state = 'stand'
 
-
-
     def jump(self, keys):
         self.frame_index = 4
         self.y_vel += self.gravity
-        #self.can_jump  = 0
+        # self.can_jump  = 0
         if self.y_vel >= 0:
             self.state = 'fall'
         if keys[pygame.K_d] or keys[pygame.K_RIGHT]:
@@ -211,17 +211,16 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_a] or keys[pygame.K_LEFT]:
             self.face_right = False
             self.x_vel = self.calc_vel(self.x_vel, self.x_accel, self.max_x_vel, False)
-        #fondermantal jump distance
+        # fondermantal jump distance
         if not keys[pygame.K_SPACE] and pygame.time.get_ticks() - self.current_time2 > 250:
             self.y_vel = 0
             self.state = 'fall'
             self.current_time = 0
 
-
     def fall(self, keys):
         self.y_vel = self.calc_vel(self.y_vel, self.gravity, self.max_y_vel)
 
-        #if self.rect.bottom > C.GROUND_HEIGHT:
+        # if self.rect.bottom > C.GROUND_HEIGHT:
         #    self.rect.bottom = C.GROUND_HEIGHT
         #    self.y_vel = 0
         #    self.state = 'walk'
@@ -244,7 +243,6 @@ class Player(pygame.sprite.Sprite):
             self.can_second_jump = 1
             self.y_vel = self.jump_vel
 
-
     def die(self, keys):
         self.rect.y += self.y_vel
         self.y_vel += self.gravity
@@ -258,14 +256,13 @@ class Player(pygame.sprite.Sprite):
         self.state = 'die'
         self.death_timer = self.current_time
 
-
-    #calculate
+    # calculate
     def calc_vel(self, vel, accel, max_vel, is_positive=True):
         if is_positive:
             return min(vel + accel, max_vel)
         else:
             return max(vel - accel, -max_vel)
+
     def calc_frame_duration(self):
         duration = -60 / self.max_run_vel * abs(self.x_vel) + 80
         return duration
-

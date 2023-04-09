@@ -1,7 +1,8 @@
 from ..components import info
-from  .. import tools, setup
+from .. import tools, setup
 from .. import constants as C
 import pygame
+
 
 class LoadScreen:
     def start(self, game_info):
@@ -20,8 +21,6 @@ class LoadScreen:
                                                                    int(self.background_rect.height)))
         self.viweport = setup.SCREEN.get_rect()
 
-
-
     def update(self, surface, keys):
         self.draw(surface)
 
@@ -32,10 +31,11 @@ class LoadScreen:
             self.timer = 0
 
     def draw(self, surface):
-        #next state is black screen
-        #surface.fill((0, 0, 0))
+        # next state is black screen
+        # surface.fill((0, 0, 0))
         surface.blit(self.background, self.viweport)
         self.info.draw(surface)
+
 
 class GameOver(LoadScreen):
     def start(self, game_info):
@@ -65,7 +65,7 @@ class GameOver(LoadScreen):
             self.timer = 0
 
     def draw(self, surface):
-        #next state is black screen
-        #surface.fill((0, 0, 0))
+        # next state is black screen
+        # surface.fill((0, 0, 0))
         surface.blit(self.background, self.viweport)
         self.info.draw(surface)

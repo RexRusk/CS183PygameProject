@@ -2,9 +2,10 @@ import pygame
 from . import tools
 from . import constants as C
 
+
 class Buttons(pygame.sprite.Sprite):
     def __init__(self):
-        #pygame.sprite.Sprite.__init__(self)
+        # pygame.sprite.Sprite.__init__(self)
         self.finished = False
         self.button_width, self.button_height = 0, 0
         self.image = ()
@@ -27,12 +28,10 @@ class Buttons(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (int(width * scale), int(height * scale)))
         return self.image
 
+
 def button_pressed(img):
     changed_width, changed_height = img.get_rect().size
     image = pygame.Surface((changed_width, changed_height))
     image.blit(img, (0, 0), (0, 0, changed_width, changed_height))
-    image = pygame.transform.scale(img, (int(changed_width * 0.9), int(changed_height *0.9)))
+    image = pygame.transform.scale(img, (int(changed_width * 0.9), int(changed_height * 0.9)))
     return image
-
-
-

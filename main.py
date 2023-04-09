@@ -3,9 +3,10 @@
 from source import constants, tools, buttons
 from source.states import main_menu, load_screen, level, choose_map, settings
 import time
-def main():
 
-    #use  dictionary to control which window state to prescent in the screen
+
+def main():
+    # use  dictionary to control which window state to prescent in the screen
 
     state_dict = {
 
@@ -18,7 +19,6 @@ def main():
     }
     game = tools.Game(state_dict, 'main_menu')
     game.run()
-
 
 
 if __name__ == '__main__':

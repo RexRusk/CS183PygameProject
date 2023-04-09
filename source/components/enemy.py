@@ -1,7 +1,8 @@
 import pygame
 from .. import setup, tools
-from .. import  constants as C
+from .. import constants as C
 from ..states import level
+
 
 def create_enemy(enemy_data):
     enemy_type = enemy_data['type']
@@ -12,6 +13,7 @@ def create_enemy(enemy_data):
         enemy = Koopa(x, y, direction, 'koopa', color)
 
     return enemy
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, x, y_bottom, direction, name, frame_rects):
@@ -30,7 +32,7 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.bottom = y_bottom
         self.timer = 0
 
-        #up and down movements
+        # up and down movements
         self.x_vel = -1 * C.ENEMY_SPEED if self.direction == 0 else C.ENEMY_SPEED
         self.y_vel = 0
         self.gravity = C.GRAVITY
@@ -39,7 +41,7 @@ class Enemy(pygame.sprite.Sprite):
     def load_frames(self, frame_rects):
         for frame_rect in frame_rects:
             left_frame = tools.get_image(setup.GRAPHICS['enemies'], *frame_rect, (0, 0, 0), C.MONSTER_MULTI)
-            #flip left to right
+            # flip left to right
             right_frame = pygame.transform.flip(left_frame, True, False)
             self.left_frames.append(left_frame)
             self.right_frames.append(right_frame)
@@ -100,11 +102,11 @@ class Enemy(pygame.sprite.Sprite):
         sprite = pygame.sprite.spritecollideany(self, level.ground_items_group)
         if sprite:
             if self.direction:
-                #left
+                # left
                 self.direction = 0
                 self.rect.right = sprite.rect.left
             else:
-                #right
+                # right
                 self.direction = 1
                 self.rect.left = sprite.rect.right
             self.x_vel *= -1
@@ -116,12 +118,11 @@ class Enemy(pygame.sprite.Sprite):
                 level.enemy_group.remove(enemy)
                 level.dying_group.add(enemy)
 
-
     def check_y_collisions(self, level):
         check_group = pygame.sprite.Group(level.ground_items_group, level.box_group, level.brick_group)
         sprite = pygame.sprite.spritecollideany(self, check_group)
         if sprite:
-            #drop
+            # drop
             if self.rect.top < sprite.rect.top:
                 self.rect.bottom = sprite.rect.top
                 self.y_vel = 0
@@ -159,6 +160,7 @@ class Goomba(Enemy):
             self.death_timer = self.current_time
         if self.current_time - self.death_timer > 500:
             self.kill()
+
 
 class Koopa(Enemy):
     def __init__(self, x, y, direction, name, color):

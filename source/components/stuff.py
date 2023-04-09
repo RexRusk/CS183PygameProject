@@ -2,7 +2,7 @@ import pygame
 
 
 class Item(pygame.sprite.Sprite):
-    #sprite in level
+    # sprite in level
     def __init__(self, x, y, w, h, name):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((w, h)).convert()
@@ -10,6 +10,7 @@ class Item(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
         self.name = name
+
 
 class Checkpoint(Item):
     def __init__(self, x, y, w, h, checkpoint_type, enemy_group_id=None, name='checkpoint'):

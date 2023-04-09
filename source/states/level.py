@@ -1,10 +1,11 @@
 from ..components import info, brick, box, enemy, coin
-from .. import tools,setup, buttons
-from .. components import player, stuff
-from .. import  constants as C
+from .. import tools, setup, buttons
+from ..components import player, stuff
+from .. import constants as C
 import pygame
 import os
 import json
+
 
 class Level:
     def start(self, game_info):
@@ -14,10 +15,10 @@ class Level:
         self.next = 'game_over'
         self.info = info.Info('level', self.game_info)
         self.level = self.game_info['level']
-        #loading maps' json
+        # loading maps' json
         self.load_map_data()
         self.setup_background()
-        #loading player's position in each map
+        # loading player's position in each map
         self.setup_start_positions()
         self.setup_player()
         self.setup_ground_items()
@@ -27,30 +28,32 @@ class Level:
         self.check_win()
         self.current_time = 0
         self.setup_touches()
-        self.a = 0 # pause
-        self.b = 0 # menu
+        self.a = 0  # pause
+        self.b = 0  # menu
         self.stop = False
+        self.hold = False  # buttons
+
     def load_map_data(self):
         file_name = ['level_1.json', 'level_2.json', 'level_3.json', 'level_4.json']
         file_path = os.path.join('source/data/maps', file_name[self.level])
         with open(file_path) as f:
             self.map_data = json.load(f)
-    #set up level_1 background
+
+    # set up level_1 background
     def setup_background(self):
         self.image_name = self.map_data['image_name']
-        #sky is here
+        # sky is here
         self.sky = setup.GRAPHICS['Sky']
         sky_rect = self.sky.get_rect()
-        self.sky = pygame.transform.scale(self.sky, (int(sky_rect.width*C.BG_MULTI),
-                                                                   int(sky_rect.height*C.BG_MULTI)))
+        self.sky = pygame.transform.scale(self.sky, (int(sky_rect.width * C.BG_MULTI),
+                                                     int(sky_rect.height * C.BG_MULTI)))
 
         self.black = setup.GRAPHICS['black']
         sky_rect = self.sky.get_rect()
         self.black = pygame.transform.scale(self.black, (int(sky_rect.width * C.NBG_MULTI),
-                                                     int(sky_rect.height * C.NBG_MULTI)))
+                                                         int(sky_rect.height * C.NBG_MULTI)))
 
-
-        #background is level ground incoudes ground but not sky
+        # background is level ground incoudes ground but not sky
         self.background = setup.GRAPHICS[self.image_name]
         rect = self.background.get_rect()
 
@@ -60,13 +63,12 @@ class Level:
             self.background = pygame.transform.scale(self.background, (int(rect.width * C.BG_MULTI2),
                                                                        int(rect.height * C.BG_MULTI2)))
         else:
-            self.background = pygame.transform.scale(self.background, (int(rect.width*C.BG_MULTI),
-                                                                           int(rect.height*C.BG_MULTI)))
-        #TODO:this line is testing
+            self.background = pygame.transform.scale(self.background, (int(rect.width * C.BG_MULTI),
+                                                                       int(rect.height * C.BG_MULTI)))
+        # TODO:this line is testing
         self.background_rect = self.background.get_rect()
 
         self.game_window = setup.SCREEN.get_rect()
-
 
         self.game_ground = pygame.Surface((self.background_rect.width, self.background_rect.height))
 
@@ -74,7 +76,7 @@ class Level:
         self.positions = []
         for data in self.map_data['maps']:
             self.positions.append((data['start_x'], data['end_x'], data['player_x'], data['player_y']))
-        #test
+        # test
         self.start_x, self.end_x, self.player_x, self.player_y = self.positions[0]
 
     def setup_player(self):
@@ -83,8 +85,8 @@ class Level:
         self.player.rect.bottom = self.player_y
 
     def setup_ground_items(self):
-        #collision detection datas
-        #group is to handle multiply sprite objects
+        # collision detection datas
+        # group is to handle multiply sprite objects
         self.ground_items_group = pygame.sprite.Group()
         for name in ['ground', 'pipe', 'step']:
             for item in self.map_data[name]:
@@ -95,33 +97,32 @@ class Level:
         self.box_group = pygame.sprite.Group()
         self.coin_group = pygame.sprite.Group()
 
-        #bricks
+        # bricks
         if 'brick' in self.map_data:
             for brick_data in self.map_data['brick']:
                 x, y = brick_data['x'], brick_data['y']
                 brick_type = brick_data['type']
                 if 'brick_num' in brick_data:
-                    #TODO batch bricks
+                    # TODO batch bricks
                     pass
                 else:
                     self.brick_group.add(brick.Brick(x, y, brick_type))
 
-        #boxes
+        # boxes
         if 'box' in self.map_data:
             for box_data in self.map_data['box']:
                 x, y = box_data['x'], box_data['y']
                 box_type = box_data['type']
                 self.box_group.add(box.Box(x, y, box_type))
 
-        #coins
+        # coins
         if 'coin' in self.map_data:
             for coin_data in self.map_data['coin']:
                 x, y = coin_data['x'], coin_data['y']
                 self.coin_group.add(coin.FlashingCoins(x, y))
 
-
     def setup_enemies(self):
-        #enemy put into this group after checkpoints
+        # enemy put into this group after checkpoints
         self.dying_group = pygame.sprite.Group()
         self.shell_group = pygame.sprite.Group()
         self.enemy_group = pygame.sprite.Group()
@@ -143,8 +144,8 @@ class Level:
 
     def setup_music(self, game_info):
         if game_info['level'] == 0:
-                pygame.mixer.stop()
-                tools.load_musics('resources/music/level1.mp3', -1)
+            pygame.mixer.stop()
+            tools.load_musics('resources/music/level1.mp3', -1)
         elif game_info['level'] == 1:
             pygame.mixer.stop()
             tools.load_musics('resources/music/level2.mp3', -1)
@@ -158,16 +159,18 @@ class Level:
     def update(self, surface, keys):
         self.current_time = pygame.time.get_ticks()
         # update player's position
-        self.player.update(keys)
-        #pause button
+
+        # pause button
         if self.stop == True:
             self.update_touches(keys)
         else:
             if self.player.dead:
+                self.player.update(keys)
                 if self.current_time - self.player.death_timer > 3000:
                     self.finished = True
                     self.update_game_info()
             else:
+                self.player.update(keys)
                 self.game_info.update()
                 self.update_touches(keys)
                 self.update_player_position()
@@ -187,23 +190,23 @@ class Level:
         self.draw(surface)
 
     def update_player_position(self):
-        #x direction
-        #TODO +=
+        # x direction
+        # TODO +=
         self.player.rect.x += self.player.x_vel
-        #self.player.rect.x = int(pygame.mouse.get_pos()[0])
-        #self.player.rect.y = int(pygame.mouse.get_pos()[1])
+        # self.player.rect.x = int(pygame.mouse.get_pos()[0])
+        # self.player.rect.y = int(pygame.mouse.get_pos()[1])
         if self.player.rect.x < self.start_x:
             self.player.rect.x = self.start_x
         elif self.player.rect.right > self.end_x:
             self.player.rect.right = self.end_x
         self.check_x_collisions()
 
-        #y direction
+        # y direction
         if not self.player.dead:
             self.player.rect.y += self.player.y_vel
             self.check_y_collisions()
 
-    #collision detection
+    # collision detection
     def check_x_collisions(self):
         check_group = pygame.sprite.Group(self.ground_items_group, self.brick_group, self.box_group)
         collided_sprite = pygame.sprite.spritecollideany(self.player, check_group)
@@ -228,6 +231,7 @@ class Level:
                     shell.rect.x -= 40
                     shell.direction = -1
                 shell.state = 'slide'
+
     def check_y_collisions(self):
 
         ground_item = pygame.sprite.spritecollideany(self.player, self.ground_items_group)
@@ -236,7 +240,7 @@ class Level:
         coin = pygame.sprite.spritecollideany(self.player, self.coin_group)
         enemy = pygame.sprite.spritecollideany(self.player, self.enemy_group)
 
-        #conclude which to bump
+        # conclude which to bump
         if brick and box:
             to_brick = abs(self.player.rect.centerx - brick.rect.centerx)
             to_box = abs(self.player.rect.centerx - box.rect.centerx)
@@ -259,7 +263,7 @@ class Level:
             self.game_info['coin'] += 1
         if enemy:
             tools.load_sounds('resources/sound/trampled.mp3', self.game_info['volume'])
-            #move enemy in groups
+            # move enemy in groups
             self.enemy_group.remove(enemy)
             if enemy.name == 'koopa':
                 self.shell_group.add(enemy)
@@ -276,7 +280,7 @@ class Level:
 
             enemy.go_die(how)
 
-            #add score
+            # add score
             self.game_info['score'] += 100
         self.check_will_fall(self.player)
 
@@ -284,22 +288,22 @@ class Level:
         if self.player.rect.x < sprite.rect.x:
             self.player.rect.right = sprite.rect.left
         else:
-             self.player.rect.left = sprite.rect.right
+            self.player.rect.left = sprite.rect.right
         self.player.x_vel = 0
 
     def adjust_player_y(self, sprite):
-        #downwards
+        # downwards
         if self.player.rect.bottom < sprite.rect.bottom:
             self.player.rect.bottom = sprite.rect.top
             self.player.y_vel = 0
             self.player.state = 'walk'
-        #upwards
+        # upwards
         else:
             self.player.rect.top = sprite.rect.bottom
             self.player.y_vel = 7
             self.player.state = 'fall'
 
-            #box bumped
+            # box bumped
             if sprite.name == 'box':
                 if sprite.state == 'rest':
                     self.game_info['score'] += 100
@@ -317,7 +321,7 @@ class Level:
         half = self.game_window.x + self.game_window.width / 2
         if self.player.x_vel > 0 and self.player.rect.centerx > half \
                 and self.game_window.right < self.end_x:
-            #print(self.player.x_vel, self.player.rect.centerx, self.game_window.left, self.start_x)
+            # print(self.player.x_vel, self.player.rect.centerx, self.game_window.left, self.start_x)
             self.game_window.x += self.player.x_vel
             self.start_x = self.game_window.x
 
@@ -326,20 +330,19 @@ class Level:
             self.game_window.x += self.player.x_vel
             self.start_x = self.game_window.x
 
-
     def draw(self, surface):
-        #blit(source,dest,area=None)
+        # blit(source,dest,area=None)
         self.game_ground.blit(self.black, self.game_window)
         self.game_ground.blit(self.background, self.game_window, self.game_window)
 
-        #draw player
+        # draw player
         self.game_ground.blit(self.player.image, self.player.rect)
-        #put the game player,background to ground, and blit ground
+        # put the game player,background to ground, and blit ground
         self.brick_group.draw(self.game_ground)
         self.box_group.draw(self.game_ground)
         self.coin_group.draw(self.game_ground)
 
-        #enemies
+        # enemies
         self.enemy_group.draw(self.game_ground)
         self.dying_group.draw(self.game_ground)
         self.shell_group.draw(self.game_ground)
@@ -347,34 +350,33 @@ class Level:
         surface.blit(self.game_ground, (0, 0), self.game_window)
         self.info.draw(surface)
 
-        #buttons
+        # buttons
         surface.blit(self.pause_button, (C.SCREEN_W * 7 / 8 - self.pause_button.get_rect().size[0] / 2,
-                                        C.SCREEN_H * 1 / 8 - self.pause_button.get_rect().size[1] / 2))
+                                         C.SCREEN_H * 1 / 8 - self.pause_button.get_rect().size[1] / 2))
 
-        #menu button
+        # menu button
         if self.stop == True:
             surface.blit(self.menu_button, (C.SCREEN_W / 2 - self.menu_button.get_rect().size[0] / 2,
-                                             C.SCREEN_H / 8 * 3 - self.menu_button.get_rect().size[1] / 2))
+                                            C.SCREEN_H / 8 * 3 - self.menu_button.get_rect().size[1] / 2))
 
     def check_checkpoints(self):
-        #check whether player invoke checkpoints
+        # check whether player invoke checkpoints
         checkpoint = pygame.sprite.spritecollideany(self.player, self.checkpoint_group)
         if checkpoint:
-            #checkpoints for enemy appearance
+            # checkpoints for enemy appearance
             if checkpoint.checkpoint_type == 0:
                 self.enemy_group.add(self.enemy_group_dict[str(checkpoint.enemy_group_id)])
             checkpoint.kill()
 
-
     def check_if_go_die(self):
         if self.player.rect.y > C.SCREEN_H:
-
             self.player.go_die()
 
     def update_game_info(self):
         if self.player.dead:
             self.game_info['lives'] -= 1
-            self.game_info['score'] = 0
+            self.game_info['score'] = self.game_info['next_score']
+            self.game_info['coin'] = self.game_info['next_coin']
         if self.game_info['lives'] == 0:
             self.next = 'game_over'
         else:
@@ -387,6 +389,7 @@ class Level:
             if (self.player.rect.x > 9000 and self.game_info['level'] == 0) \
                     or (self.player.rect.x > 8100 and self.game_info['level'] == 1):
                 self.game_info['next_score'] += self.game_info['score']
+                self.game_info['next_coin'] += self.game_info['coin']
                 self.next = 'load_screen'
                 self.game_info['level'] += 1
                 pygame.time.delay(200)
@@ -396,66 +399,67 @@ class Level:
             if (self.player.rect.x > 7000 and self.game_info['level'] == 2 and self.finished == False):
                 tools.load_musics('resources/sound/completed.mp3')
                 self.game_info['next_score'] = self.game_info['score']
+                self.game_info['next_coin'] += self.game_info['coin']
                 self.game_info['level'] += 1
                 self.game_info['player_state'] = 'complete'
                 self.next = 'load_screen'
-                pygame.time.delay(200)
+                pygame.time.delay(400)
                 self.finished = True
 
     def setup_touches(self):
-        self.pause_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 140, 810, 138, 138, (0, 0, 0), C.NBG_MULTI)
+        self.pause_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 140, 810, 138, 138, (0, 0, 0),
+                                            C.NBG_MULTI)
         # back to manu
-        self.menu_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 1324, 1105, 138, 138, (0, 0, 0), 2 * C.NBG_MULTI)
+        self.menu_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 1324, 1105, 138, 138, (0, 0, 0),
+                                           2 * C.NBG_MULTI)
 
     def update_touches(self, keys):
         x, y = pygame.mouse.get_pos()
         pressed_array = pygame.mouse.get_pressed()
 
         if self.a % 2 == 0 \
-                and x >= C.SCREEN_W * 7 / 8 - 69 \
-                and x <= C.SCREEN_W * 7 / 8 + 69 \
-                and y >= C.SCREEN_H * 1 / 8 - 69 \
-                and y <= C.SCREEN_H * 1 / 8 + 69:
+                and x >= C.SCREEN_W * 7 / 8 - 69 / 2 \
+                and x <= C.SCREEN_W * 7 / 8 + 69 / 2 \
+                and y >= C.SCREEN_H * 1 / 8 - 69 / 2 \
+                and y <= C.SCREEN_H * 1 / 8 + 69 / 2:
             self.pause_button = buttons.button_pressed(self.pause_button)
             self.a = 1
 
-        if not (x >= C.SCREEN_W * 7 / 8 - 69 \
-                and x <= C.SCREEN_W * 7 / 8 + 69 \
-                and y >= C.SCREEN_H * 1 / 8 - 69 \
-                and y <= C.SCREEN_H * 1 / 8 + 69):
-            self.pause_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 140, 810, 138, 138, (0, 0, 0), C.NBG_MULTI)
+        if not (x >= C.SCREEN_W * 7 / 8 - 69 / 2 \
+                and x <= C.SCREEN_W * 7 / 8 + 69 / 2 \
+                and y >= C.SCREEN_H * 1 / 8 - 69 / 2 \
+                and y <= C.SCREEN_H * 1 / 8 + 69 / 2):
+            self.pause_button = tools.get_image(setup.GRAPHICS['Iconic2048x2048'], 140, 810, 138, 138, (0, 0, 0),
+                                                C.NBG_MULTI)
             self.a = 0
 
         # play button
         if pressed_array[0] \
+                and self.hold == False \
                 and self.stop == False \
-                and x >= C.SCREEN_W * 7 / 8 - 69 \
-                and x <= C.SCREEN_W * 7 / 8 + 69 \
-                and y >= C.SCREEN_H * 1 / 8 - 69 \
-                and y <= C.SCREEN_H * 1 / 8 + 69:
+                and x >= C.SCREEN_W * 7 / 8 - 69 / 2 \
+                and x <= C.SCREEN_W * 7 / 8 + 69 / 2 \
+                and y >= C.SCREEN_H * 1 / 8 - 69 / 2 \
+                and y <= C.SCREEN_H * 1 / 8 + 69 / 2:
+            self.hold = True
             self.stop = True
+
+        if not pygame.mouse.get_pressed()[0]:
+            self.hold = False
 
         if self.stop == True:
             # go main_menu button
             if pressed_array[0] \
-                and x >= C.SCREEN_W / 2 - 69 * 2 \
-                and x <= C.SCREEN_W / 2 + 69 * 2 \
-                and y >= C.SCREEN_H  / 2 - 69 * 2 \
-                and y <= C.SCREEN_H  / 2 + 69 * 2:
+                    and x >= C.SCREEN_W / 2 - 69 * 2 \
+                    and x <= C.SCREEN_W / 2 + 69 * 2 \
+                    and y >= C.SCREEN_H / 2 - 69 * 2 \
+                    and y <= C.SCREEN_H / 2 + 69 * 2:
                 self.stop = False
                 self.next = 'main_menu'
                 pygame.time.delay(50)
                 self.finished = True
 
-            #back to play
-            elif pressed_array[0] \
-                    and not (x >= C.SCREEN_W * 7 / 8 - 69 \
-                and x <= C.SCREEN_W * 7 / 8 + 69 \
-                and y >= C.SCREEN_H * 1 / 8 - 69 \
-                and y <= C.SCREEN_H * 1 / 8 + 69):
+            # back to play
+            elif pressed_array[0] and self.hold == False and self.stop == True:
+                self.hold = True
                 self.stop = False
-
-
-
-
-

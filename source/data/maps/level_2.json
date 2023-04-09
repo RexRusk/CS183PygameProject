@@ -105,7 +105,7 @@
         {"x": 254, "y": 66, "type":0, "color":1,"brick_num":83, "direction":0},
         {"x":3816, "y": 66, "type":6, "color":1},
         {"x":3859, "y": 66, "type":0, "color":1,"brick_num":47, "direction":0},
-        {"x":1244, "y":324, "type":1, "color":1},
+
         
         {"x":1672, "y":281, "type":0, "color":1,"brick_num":3, "direction":1},
         {"x":1715, "y":367, "type":0, "color":1},
